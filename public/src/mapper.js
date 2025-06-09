@@ -533,6 +533,14 @@ function read_solution_file(input) {
         draw_solution(solution)
         activate_routes_list()
         list_routes_in_menu()
+
+        // Show and populate route analysis section
+        if (typeof showRouteAnalysisSection === 'function') {
+            showRouteAnalysisSection();
+        }
+        if (typeof populateRouteAnalysis === 'function') {
+            populateRouteAnalysis();
+        }
     }
 
     reader.read_solution(input.files[0], after_loading_solution);
@@ -688,6 +696,16 @@ function read_instance_file(input, callback) {
         activate_nodes_list()
 
         list_nodes_in_menu()
+
+        // Auto-fill textarea with instance content
+        const fileReader = new FileReader();
+        fileReader.onload = function (e) {
+            const instanceTextarea = document.getElementById('instance_textarea');
+            if (instanceTextarea) {
+                instanceTextarea.value = e.target.result;
+            }
+        };
+        fileReader.readAsText(input.files[0]);
 
     };
 
