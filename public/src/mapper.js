@@ -479,6 +479,7 @@ function list_routes_in_menu() {
 }
 
 function reset_visualizer() {
+    reset_nodes_list()
     reset_routes_list()
 
     //clean up map area
@@ -531,11 +532,7 @@ function read_solution_file(input) {
         select_button(fill_routes_btn, true)
         draw_solution(solution)
         activate_routes_list()
-
-        // Hiển thị route analysis thay vì routes menu cũ
-        if (typeof showRouteAnalysis === 'function') {
-            showRouteAnalysis();
-        }
+        list_routes_in_menu()
     }
 
     reader.read_solution(input.files[0], after_loading_solution);
