@@ -1,0 +1,148 @@
+.pickup-marker,
+.pickup-marker-opaque {
+    text-align: center;
+    color: white;
+
+    .pickup-marker-opaque {
+        opacity: 0.6;
+        filter: grayscale(30%);
+    }
+
+    .delivery-marker-opaque {
+        opacity: 0.6;
+        filter: grayscale(30%);
+    }
+
+    .depot-marker-opaque {
+        opacity: 0.6;
+        filter: grayscale(30%);
+    }
+
+    /* Animation classes */
+    .marker-pulse {
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+        }
+    }
+
+    /* Route line styles */
+    .route-line {
+        stroke-width: 3px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+
+    .route-line:hover {
+        stroke-width: 5px;
+        opacity: 1;
+    }
+
+    ign: middle;
+    border-radius: 50%;
+    border-style: solid;
+    font-size: 14px;
+    font-weight: bold;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    border-color: #ffffff;
+    border-width: 3px;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    transition: all 0.3s ease;
+}
+
+.pickup-marker:hover,
+.pickup-marker-opaque:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.6);
+}
+
+.delivery-marker,
+.delivery-marker-opaque {
+    /* Remove fixed width/height to allow JavaScript control */
+    margin: auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(34, 124, 171, 0.4);
+    transition: all 0.3s ease;
+    background-image: linear-gradient(to bottom right,
+            transparent 0 50%,
+            #ffffff 50% 100%),
+        linear-gradient(to bottom left,
+            transparent 0 50%,
+            #ffffff 50% 100%);
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    background-position: left, right;
+    background-color: #3b82f6;
+    border: 0px solid transparent;
+}
+
+.delivery-marker:hover,
+.delivery-marker-opaque:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(34, 124, 171, 0.6);
+    border: 2px solid white;
+}
+
+.delivery-marker:before,
+.delivery-marker-opaque:before {
+    content: '';
+    position: relative;
+    display: block;
+    width: 68%;
+    height: 68%;
+    margin: auto;
+    background-image: linear-gradient(to bottom right,
+            transparent 0 50%,
+            #3498db 50% 100%),
+        linear-gradient(to bottom left,
+            transparent 0 50%,
+            #3498db 50% 100%);
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    background-position: left, right;
+    top: 20%;
+    left: 2%;
+    border-radius: 2px;
+}
+
+.depot-marker,
+.depot-marker-opaque {
+    width: 16px;
+    height: 16px;
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    border-radius: 50%;
+    border: 3px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
+    transition: all 0.3s ease;
+}
+
+.depot-marker:hover,
+.depot-marker-opaque:hover {
+    transform: scale(1.2);
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.6);
+}
+
+.pickup-marker-opaque {
+    opacity: 0.4;
+}
+
+.delivery-marker-opaque {
+    opacity: 0.4;
+}
+
+.depot-marker-opaque {
+    opacity: 0.4;
+}

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDPTW Visualizer</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/src/style-minimal.css">
+    <link rel="stylesheet" href="/src/shapes-tailwind.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#1e40af',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin="" />
+    <link rel="stylesheet" href="/src/shapes-tailwind.css" />
+    <link rel="stylesheet" href="/src/style-minimal.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+    <script src="https://kit.fontawesome.com/0a8561bf88.js" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+
+
+    <script type="text/javascript" src="https://unpkg.com/moment@latest"></script>
+    <script type="text/javascript" src="https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js"></script>
+    <script type="text/javascript"
+        src="https://unpkg.com/vis-timeline@latest/peer/umd/vis-timeline-graph2d.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/vis-timeline/styles/vis-timeline-graph2d.min.css" />
+    <script type="text/javascript" src="https://unpkg.com/vis-network@latest/peer/umd/vis-network.js"></script>
+
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-80 bg-white shadow-xl border-r border-gray-200 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-route text-2xl"></i>
+                    <h1 class="text-xl font-bold">PDPTW Visualizer</h1>
+                </div>
+            </div>
+
+            <!-- Sidebar Content -->
+            <div class="flex-1 overflow-y-auto">
+                <!-- Load Instance Section -->
+                <div class="p-4 border-b border-gray-200">
+                    <button onclick="document.getElementById('load_instance').click()"
+                        class="w-full flex items-center space-x-3 px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fa fa-folder-open text-blue-600"></i>
+                        <span class="font-medium text-gray-700">Load Instance</span>
+                    </button>
+                </div>
+
+                <!-- Instance Form -->
+                <div class="p-4 border-b border-gray-200">
+                    <form id="instance-form" onsubmit="runInstance(event)" class="space-y-4">
+                        <!-- Instance Textarea -->
+                        <div>
+                            <label for="instance_textarea"
+                                class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-edit text-blue-600"></i>
+                                <span>Nhập nội dung instance:</span>
+                            </label>
+                            <textarea id="instance_textarea" rows="6"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm font-mono"
+                                placeholder="Paste nội dung instance.txt hoặc click 'Load ví dụ' để thử..."></textarea>
+                        </div>
+
+                        <!-- Load Sample Button -->
+                        <button type="button" onclick="loadSampleInstance()"
+                            class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-200">
+                            <i class="fas fa-download"></i>
+                            <span>Load ví dụ instance</span>
+                        </button>
+
+                        <!-- Parameters Section -->
+                        <div>
+                            <label class="flex items-center space-x-2 text-sm font-medium text-gray-700 mb-3">
+                                <i class="fas fa-cog text-blue-600"></i>
+                                <span>Tham số thuật toán:</span>
+                            </label>
+
+                            <!-- Parameters Grid -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32" title="Số lượng routes ban đầu để thử">Số
+                                        routes:</label>
+                                    <input type="number" id="num_routes" name="num_routes" value="7"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        min="1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32"
+                                        title="Số lượng kiến trong thuật toán ACO">Số kiến:</label>
+                                    <input type="number" id="ants" name="ants" value="10"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        min="1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32"
+                                        title="Số vòng lặp tối đa của thuật toán">Số vòng lặp:</label>
+                                    <input type="number" id="iterations" name="iterations" value="20"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        min="1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32"
+                                        title="Hệ số ảnh hưởng của pheromone">Alpha (α):</label>
+                                    <input type="number" id="alpha" name="alpha" value="2.0"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        step="0.1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32" title="Hệ số ảnh hưởng của heuristic">Beta
+                                        (β):</label>
+                                    <input type="number" id="beta" name="beta" value="5.0"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        step="0.1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32" title="Hệ số bay hơi pheromone (0-1)">Rho
+                                        (ρ):</label>
+                                    <input type="number" id="rho" name="rho" value="0.1"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        step="0.01" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32" title="Giá trị pheromone tối đa">τ
+                                        max:</label>
+                                    <input type="number" id="tau_max" name="tau_max" value="50.0"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        step="0.1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32" title="Giá trị pheromone tối thiểu">τ
+                                        min:</label>
+                                    <input type="number" id="tau_min" name="tau_min" value="0.01"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        step="0.001" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32" title="Xác suất chọn greedy (0-1)">Greedy
+                                        bias:</label>
+                                    <input type="number" id="greedy_bias" name="greedy_bias" value="0.85"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        step="0.01" min="0" max="1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32"
+                                        title="Số solution tốt nhất để cập nhật pheromone">Elite solutions:</label>
+                                    <input type="number" id="elite_solutions" name="elite_solutions" value="4"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        min="1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32"
+                                        title="Xác suất áp dụng local search (0-1)">Local search prob:</label>
+                                    <input type="number" id="local_search_prob" name="local_search_prob" value="0.7"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        step="0.01" min="0" max="1" required />
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="text-xs text-gray-600 w-32"
+                                        title="Số vòng lặp không cải thiện để restart">Restart threshold:</label>
+                                    <input type="number" id="restart_threshold" name="restart_threshold" value="2"
+                                        class="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                        min="1" required />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="space-y-2">
+                            <button type="submit"
+                                class="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors duration-200 font-medium">
+                                <i class="fas fa-play"></i>
+                                <span>Chạy giải bài toán</span>
+                            </button>
+
+                            <button type="button" onclick="resetParameters()"
+                                class="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-colors duration-200">
+                                <i class="fas fa-undo"></i>
+                                <span>Reset tham số mặc định</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Load Solution Section -->
+                <div class="p-4 border-b border-gray-200">
+                    <button id="load_solution_btn" onclick="document.getElementById('load_solution').click()"
+                        class="w-full flex items-center space-x-3 px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+                        <i class="fa fa-file-alt text-blue-600"></i>
+                        <span class="font-medium text-gray-700">Load Solution</span>
+                    </button>
+                </div>
+
+                <!-- Nodes Section -->
+                <div class="border-b border-gray-200">
+                    <button id="nodes_button" onclick="toggleDropdown('nodes')"
+                        class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors duration-200">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa fa-map-marker-alt text-blue-600"></i>
+                            <span class="font-medium text-gray-700">Nodes</span>
+                        </div>
+                        <i id="nodes-icon"
+                            class="fa fa-angle-down text-gray-400 transform transition-transform duration-200"></i>
+                    </button>
+                    <div id="nodes_dropdown" class="hidden bg-gray-50 max-h-40 overflow-y-auto"></div>
+                </div>
+
+                <!-- Routes Section -->
+                <div class="border-b border-gray-200">
+                    <button id="routes_button" onclick="toggleDropdown('routes')"
+                        class="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors duration-200">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa fa-route text-blue-600"></i>
+                            <span class="font-medium text-gray-700">Routes</span>
+                        </div>
+                        <i id="routes-icon"
+                            class="fa fa-angle-down text-gray-400 transform transition-transform duration-200"></i>
+                    </button>
+                    <div id="routes_dropdown" class="hidden bg-gray-50 max-h-40 overflow-y-auto"></div>
+                </div>
+            </div>
+
+            <!-- Hidden File Inputs -->
+            <input type="file" id="load_instance" class="hidden" title="Select instance file" accept=".txt"
+                onchange="read_instance_file(this)">
+            <input type="file" id="load_solution" class="hidden" title="Select solution file" accept=".txt"
+                onchange="read_solution_file(this)">
+        </div>
+
+        <!-- Map Container -->
+        <div class="flex-1 relative">
+            <div id="map" class="w-full h-full rounded-l-lg shadow-inner"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="/src/general.js"></script>
+    <script type="text/javascript" src="/src/structures.js"></script>
+    <script type="text/javascript" src="/src/reader.js"></script>
+    <script type="text/javascript" src="/src/mapper.js"></script>
+
+    <script type="text/javascript">
+        window.onload = startup;
+
+        // Toggle dropdown function
+        function toggleDropdown(section) {
+            const dropdown = document.getElementById(section + '_dropdown');
+            const icon = document.getElementById(section + '-icon');
+
+            if (dropdown.classList.contains('hidden')) {
+                // Populate menu items when opening
+                if (section === 'nodes' && typeof list_nodes_in_menu === 'function') list_nodes_in_menu();
+                if (section === 'routes' && typeof list_routes_in_menu === 'function') list_routes_in_menu();
+                dropdown.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                dropdown.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+
+                // Clear node selection khi đóng nodes dropdown
+                if (section === 'nodes') {
+                    clearNodeSelection();
+                }
+            }
+        }
+
+        // Function để clear node selection
+        function clearNodeSelection() {
+            const nodeItems = document.querySelectorAll('#nodes_dropdown .node-item');
+            nodeItems.forEach(item => {
+                item.classList.remove('selected');
+            });
+
+            // Clear highlights trên map nếu có
+            if (typeof clear_node_selection === 'function') {
+                clear_node_selection(null);
+            }
+        }
+
+        function runInstance(event) {
+            event.preventDefault();
+            const instance = document.getElementById('instance_textarea').value;
+
+            if (!instance.trim()) {
+                alert('Vui lòng nhập nội dung instance!');
+                return;
+            }
+
+            const params = {
+                num_routes: parseInt(document.getElementById('num_routes').value),
+                ants: parseInt(document.getElementById('ants').value),
+                iterations: parseInt(document.getElementById('iterations').value),
+                alpha: parseFloat(document.getElementById('alpha').value),
+                beta: parseFloat(document.getElementById('beta').value),
+                rho: parseFloat(document.getElementById('rho').value),
+                tau_max: parseFloat(document.getElementById('tau_max').value),
+                tau_min: parseFloat(document.getElementById('tau_min').value),
+                greedy_bias: parseFloat(document.getElementById('greedy_bias').value),
+                elite_solutions: parseInt(document.getElementById('elite_solutions').value),
+                local_search_prob: parseFloat(document.getElementById('local_search_prob').value),
+                restart_threshold: parseInt(document.getElementById('restart_threshold').value)
+            };
+
+            console.log('Sending parameters:', params);
+
+            // Hiển thị loading
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Đang xử lý...</span>';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            fetch('/solve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ instance, params })
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        // Get text first, as .json() will fail if not JSON, obscuring the real error
+                        return res.text().then(text => {
+                            let errorMsg = `Server responded with ${res.status}: ${text || 'No specific error message from server.'}`;
+                            try {
+                                // If the text is JSON, try to parse it for a more specific error
+                                const errData = JSON.parse(text);
+                                if (errData && errData.error) {
+                                    errorMsg = `Server error: ${errData.error}`;
+                                }
+                            } catch (e) {
+                                // Not JSON or failed to parse, use the text directly
+                            }
+                            throw new Error(errorMsg);
+                        });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    // Khôi phục button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+
+                    if (data.success) {
+                        // Tự động nạp solution trả về vào visualizer
+                        if (data.result) {
+                            console.log('Solution received, loading into visualizer...');
+
+                            // Đảm bảo instance đã được load trước khi load solution
+                            if (typeof instance_loaded === 'undefined' || !instance_loaded) {
+                                console.log('Instance not loaded, loading instance first...');
+
+                                // Tạo fake input để load instance
+                                const instanceBlob = new Blob([instance], { type: 'text/plain' });
+                                const instanceFile = new File([instanceBlob], 'instance.txt', { type: 'text/plain' });
+                                const fakeInstanceInput = { files: [instanceFile] };
+
+                                // Load instance trước
+                                if (typeof read_instance_file === 'function') {
+                                    read_instance_file(fakeInstanceInput, function () {
+                                        loadSolutionFromText(data.result);
+                                        alert('Giải bài toán thành công! Kết quả đã được hiển thị trên bản đồ.');
+                                    });
+                                } else {
+                                    alert('Không tìm thấy hàm read_instance_file!');
+                                }
+                            } else {
+                                // Instance đã có sẵn, load solution ngay
+                                loadSolutionFromText(data.result);
+                                alert('Giải bài toán thành công! Kết quả đã được hiển thị trên bản đồ.');
+                            }
+                        } else {
+                            alert('Đã giải xong nhưng không có dữ liệu kết quả!');
+                        }
+                    } else {
+                        alert('Lỗi: ' + data.error);
+                    }
+                })
+                .catch(err => {
+                    // Khôi phục button khi có lỗi
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    alert('Lỗi xử lý yêu cầu: ' + err.message); // More specific error
+                });
+        }
+
+        // Hàm reset tham số về giá trị mặc định
+        function resetParameters() {
+            document.getElementById('num_routes').value = 7;
+            document.getElementById('ants').value = 10;
+            document.getElementById('iterations').value = 20;
+            document.getElementById('alpha').value = 2.0;
+            document.getElementById('beta').value = 5.0;
+            document.getElementById('rho').value = 0.1;
+            document.getElementById('tau_max').value = 50.0;
+            document.getElementById('tau_min').value = 0.01;
+            document.getElementById('greedy_bias').value = 0.85;
+            document.getElementById('elite_solutions').value = 4;
+            document.getElementById('local_search_prob').value = 0.7;
+            document.getElementById('restart_threshold').value = 2;
+        }
+
+        // Hàm nạp solution từ text (giả lập file solution)
+        function loadSolutionFromText(solutionText) {
+            try {
+                console.log('Loading solution from text:', solutionText);
+
+                // Tạo một Blob từ text kết quả
+                const blob = new Blob([solutionText], { type: 'text/plain' });
+                const file = new File([blob], 'solution.txt', { type: 'text/plain' });
+
+                console.log('Created file object:', file);
+
+                // Kiểm tra xem reader đã tồn tại chưa
+                if (typeof reader === 'undefined') {
+                    console.error('Reader not found, trying to initialize...');
+                    // Thử khởi tạo reader nếu chưa có
+                    if (typeof Reader !== 'undefined') {
+                        reader = new Reader();
+                    } else {
+                        alert('Lỗi: Reader chưa được khởi tạo!');
+                        return;
+                    }
+                }
+
+                // Callback sau khi load solution thành công
+                var after_loading_solution = function () {
+                    console.log('Solution loaded successfully');
+                    solution = reader.solution;
+                    is_solution_loaded = true;
+                    routes_showing = true;
+                    routes_filled = true;
+
+                    // Kích hoạt các button và hiển thị solution
+                    if (typeof enable_solution_buttons === 'function') {
+                        enable_solution_buttons(true);
+                    }
+                    if (typeof select_button === 'function' && typeof show_routes_btn !== 'undefined') {
+                        select_button(show_routes_btn, true);
+                    }
+                    if (typeof select_button === 'function' && typeof fill_routes_btn !== 'undefined') {
+                        select_button(fill_routes_btn, true);
+                    }
+                    if (typeof draw_solution === 'function') {
+                        draw_solution(solution);
+                    }
+                    if (typeof activate_routes_list === 'function') {
+                        activate_routes_list();
+                    }
+                    if (typeof list_routes_in_menu === 'function') {
+                        list_routes_in_menu();
+                    }
+
+                    console.log('Solution visualization completed');
+                }
+
+                // Gọi reader để đọc solution
+                reader.read_solution(file, after_loading_solution);
+
+            } catch (error) {
+                console.error('Error in loadSolutionFromText:', error);
+                alert('Lỗi khi load solution: ' + error.message);
+            }
+        }
+
+        // Hàm load instance ví dụ
+        function loadSampleInstance() {
+            const sampleInstance = `NAME: sample-test
+LOCATION: Sample
+TYPE: PDPTW
+SIZE: 11
+CAPACITY: 200
+NODES
+0 41.40000 2.15000 0 0 240 0 0 0
+1 41.41000 2.16000 20 50 200 5 0 6
+2 41.39000 2.14000 15 30 180 5 0 7
+3 41.42000 2.17000 25 40 190 5 0 8
+4 41.38000 2.13000 10 60 210 5 0 9
+5 41.43000 2.18000 30 20 170 5 0 10
+6 41.40500 2.15500 -20 80 220 5 1 0
+7 41.38500 2.13500 -15 60 200 5 2 0
+8 41.41500 2.16500 -25 70 210 5 3 0
+9 41.37500 2.12500 -10 90 230 5 4 0
+10 41.42500 2.17500 -30 50 190 5 5 0
+EDGES
+0 10 15 20 25 30 35 40 45 50 55
+10 0 12 18 22 28 32 38 42 48 52
+15 12 0 14 20 24 30 34 40 44 50
+20 18 14 0 16 22 26 32 36 42 46
+25 22 20 16 0 18 24 28 34 38 44
+30 28 24 22 18 0 20 26 30 36 40
+35 32 30 26 24 20 0 22 28 32 38
+40 38 34 32 28 26 22 0 24 30 34
+45 42 40 36 34 30 28 24 0 26 32
+50 48 44 42 38 36 32 30 26 0 28
+55 52 50 46 44 40 38 34 32 28 0
+EOF`;
+            document.getElementById('instance_textarea').value = sampleInstance;
+        }
+    </script>
+
+</body>
+
+</html>

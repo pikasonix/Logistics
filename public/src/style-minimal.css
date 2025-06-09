@@ -1,0 +1,240 @@
+/* Minimal CSS for PDPTW Visualizer - Only essential styles not covered by Tailwind */
+
+/* Ensure full height layout */
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    /* Tailwind-like default font stack */
+}
+
+/* Leaflet map specific styles */
+#map {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    /* Ensure map is behind UI elements if necessary */
+}
+
+/* Custom scrollbar for sidebar (Tailwind might not cover all browser specifics) */
+.sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+    background: rgba(229, 231, 235, 0.5);
+    /* gray-200 with 50% opacity */
+    border-radius: 3px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    /* gray-400 with 50% opacity */
+    border-radius: 3px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(107, 114, 128, 0.6);
+    /* gray-500 with 60% opacity */
+}
+
+/* Styles for Leaflet EasyButtons if Tailwind overrides are needed */
+.leaflet-bar a,
+.leaflet-bar a:hover {
+    /* Tailwind usually handles button styling well, but this is a fallback. */
+    /* Example: ensure buttons have a minimum size or consistent padding if needed */
+    color: #374151;
+    /* gray-700 */
+}
+
+.leaflet-bar a.leaflet-disabled {
+    cursor: default;
+    background-color: #f3f4f6;
+    /* gray-100 */
+    color: #9ca3af;
+    /* gray-400 */
+}
+
+
+/* Dropdown content in sidebar - basic styling if not fully handled by Tailwind */
+.dropdown-content-item {
+    padding: 0.5rem 1rem;
+    /* Equivalent to Tailwind's p-2 px-4 */
+    display: block;
+    text-decoration: none;
+    color: #374151;
+    /* gray-700 */
+    white-space: nowrap;
+}
+
+.dropdown-content-item:hover {
+    background-color: #f3f4f6;
+    /* gray-100 */
+}
+
+/* Ensure Leaflet controls are not overly styled by Tailwind defaults if conflicts arise */
+.leaflet-control-container .leaflet-control {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    /* A common Leaflet shadow */
+    border-radius: 4px;
+}
+
+.leaflet-touch .leaflet-bar a {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+}
+
+/* Focus styles for better accessibility */
+.focus-ring:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Button loading state */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Leaflet popup customization */
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+    margin: 12px 16px;
+    line-height: 1.4;
+}
+
+/* Route colors */
+.route-color-1 {
+    color: #ef4444;
+}
+
+.route-color-2 {
+    color: #3b82f6;
+}
+
+.route-color-3 {
+    color: #10b981;
+}
+
+.route-color-4 {
+    color: #f59e0b;
+}
+
+.route-color-5 {
+    color: #8b5cf6;
+}
+
+.route-color-6 {
+    color: #06b6d4;
+}
+
+.route-color-7 {
+    color: #f97316;
+}
+
+.route-color-8 {
+    color: #84cc16;
+}
+
+/* Loading animation */
+@keyframes pulse-soft {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.animate-pulse-soft {
+    animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom styles for node dropdown items */
+.node-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 2px 0;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.node-item:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #1d4ed8;
+    transform: translateX(2px);
+}
+
+.node-item:active {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+.node-item.selected {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #1d4ed8;
+    border-left: 3px solid #3b82f6;
+}
+
+/* Icon styles for different node types */
+.node-item .fa-circle {
+    font-size: 0.75rem;
+    margin-right: 8px;
+}
+
+/* Depot node icon */
+.node-item .depot-icon {
+    color: #3b82f6;
+    /* blue-500 */
+}
+
+/* Pickup node icon */
+.node-item .pickup-icon {
+    color: #ef4444;
+    /* red-500 */
+}
+
+/* Delivery node icon */
+.node-item .delivery-icon {
+    color: #10b981;
+    /* green-500 */
+}
