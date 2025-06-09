@@ -1,4 +1,4 @@
-7 2 2 2 5 0.1 50 0.01 0.85 4 0.7 2
+7 10 20 2 5 0.1 50 0.01 0.85 4 0.7 2
 NAME: bar-n100-1
 LOCATION: Barcelona
 COMMENT:  Sartori and Buriol (2019)
